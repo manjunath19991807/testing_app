@@ -1,14 +1,22 @@
 import { Router } from "express";
 import { validateRequest } from "../../app/middlewares/validateRequest.js";
 import { generateInsightSchema } from "../../schemas/insightSchemas.js";
-import { getMockInsights } from "./service.js";
+import { generateInsights } from "./service.js";
 
 export const insightsRouter = Router();
 
-insightsRouter.post("/", validateRequest(generateInsightSchema), (request, response) => {
-  response.status(202).json({
-    message: "Insight generation route scaffolded",
-    received: request.body,
-    result: getMockInsights()
-  });
+insightsRouter.post("/", validateRequest(generateInsightSchema), async (request, response, next) => {
+  try {
+    const userId = request.authUser!.id;
+    const { datasetId } = request.body;
+
+    const insights = await generateInsights(userId, datasetId);
+
+    response.status(200).json({
+      message: "Insights generated successfully",
+      result: insights
+    });
+  } catch (error) {
+    next(error);
+  }
 });

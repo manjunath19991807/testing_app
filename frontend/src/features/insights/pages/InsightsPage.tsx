@@ -2,24 +2,44 @@ import { Card } from "../../../components/ui/Card";
 import { GenerateInsightButton } from "../components/GenerateInsightButton";
 import { InsightPanel } from "../components/InsightPanel";
 import { useGenerateInsight } from "../hooks/useGenerateInsight";
+import { useLatestDataset } from "../../datasets/hooks/useLatestDataset";
 
 export function InsightsPage() {
-  const { insightSet } = useGenerateInsight();
+  const { dataset, isLoading: isDatasetLoading } = useLatestDataset();
+  const { insightSet, isLoading, error, generate } = useGenerateInsight(dataset?.datasetId);
 
   return (
     <div className="stack">
       <section className="hero-card">
         <span className="badge">AI feature</span>
-        <h2 style={{ marginBottom: 8 }}>Generate insights from structured dataset summaries</h2>
+        <h2 style={{ marginBottom: 8 }}>Generate insights from your dataset</h2>
         <p style={{ marginTop: 0, color: "var(--muted)", maxWidth: 740 }}>
-          A strong implementation sends a compact summary to the model instead of the whole
-          CSV. That gives you better cost control, clearer prompts, and safer handling.
+          Click the button below to analyse your uploaded CSV using AI. It will identify
+          trends, anomalies, and chart suggestions automatically.
         </p>
-        <GenerateInsightButton />
+
+        {isDatasetLoading ? (
+          <p style={{ color: "var(--muted)", fontSize: 14 }}>Loading your dataset…</p>
+        ) : !dataset ? (
+          <p style={{ color: "var(--error, #f87171)", fontSize: 14 }}>
+            No dataset uploaded yet. Please upload a CSV file first.
+          </p>
+        ) : (
+          <GenerateInsightButton
+            isLoading={isLoading}
+            onClick={generate}
+          />
+        )}
+
+        {error && (
+          <p style={{ color: "var(--error, #f87171)", fontSize: 14, marginTop: 8 }}>
+            {error}
+          </p>
+        )}
       </section>
 
       <div className="section-grid">
-        <InsightPanel insightSet={insightSet} />
+        <InsightPanel insightSet={insightSet} isLoading={isLoading} />
 
         <Card title="Why This AI Feature Works" subtitle="This is the story to tell in your README.">
           <ul style={listStyle}>
