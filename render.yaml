@@ -1,0 +1,57 @@
+services:
+  - type: web
+    name: csv-analytics-backend
+    env: node
+    plan: free
+    region: singapore        # closest to India — change to "oregon" or "frankfurt" if needed
+    rootDir: backend
+    buildCommand: npm install && npm run build
+    startCommand: npm run start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+
+      - key: PORT
+        value: 10000          # Render exposes this port externally
+
+      # --- CORS ---
+      # Set this to your Vercel frontend URL after you deploy the frontend.
+      # Example: https://csv-analytics-dashboard.vercel.app
+      - key: CLIENT_URL
+        sync: false
+
+      # --- MongoDB Atlas ---
+      # Paste your full connection string from MongoDB Atlas dashboard.
+      # Example: mongodb+srv://user:pass@cluster.mongodb.net/csv-dashboard
+      - key: CONNECTION_STRING
+        sync: false
+
+      # --- JWT Secrets ---
+      # Render will auto-generate secure random strings for these.
+      - key: JWT_SECRET
+        generateValue: true
+
+      - key: JWT_REFRESH_SECRET
+        generateValue: true
+
+      # --- File Storage ---
+      # Use "s3" for production (files survive restarts), "local" for testing only.
+      - key: STORAGE_PROVIDER
+        value: s3
+
+      - key: AWS_REGION
+        sync: false
+
+      - key: AWS_S3_BUCKET
+        sync: false
+
+      - key: AWS_ACCESS_KEY_ID
+        sync: false
+
+      - key: AWS_SECRET_ACCESS_KEY
+        sync: false
+
+      # --- OpenAI (AI Insights feature) ---
+      - key: OPENAI_API_KEY
+        sync: false

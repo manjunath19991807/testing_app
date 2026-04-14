@@ -142,7 +142,7 @@ export async function getChartData({
   return result;
 }
 
-export async function parseUploadedCsv(file, userId) {
+export async function parseUploadedCsv(file: Express.Multer.File, userId: string) {
   if (!file.originalname.toLowerCase().endsWith(".csv")) {
     throw new Error("Only CSV files are supported.");
   }
