@@ -5,8 +5,8 @@ services:
     plan: free
     region: singapore        # closest to India — change to "oregon" or "frankfurt" if needed
     rootDir: backend
-    buildCommand: npm install && npm run build
-    startCommand: npm run start
+    buildCommand: npm install --include=dev
+    startCommand: npm run start:prod
     healthCheckPath: /api/health
     envVars:
       - key: NODE_ENV
