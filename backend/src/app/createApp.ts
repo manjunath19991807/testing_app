@@ -6,14 +6,18 @@ import { errorHandler } from "./middlewares/errorHandler.js";
 export function createApp() {
   const app = express();
 
-  // Build the allowed origins list INSIDE the function so that
-  // process.env is read AFTER dotenv/config has loaded in server.ts
+  // CLIENT_URL can be comma-separated: "https://app.vercel.app,http://localhost:5173"
+  const clientUrls = (process.env.CLIENT_URL ?? "")
+    .split(",")
+    .map((u) => u.trim())
+    .filter(Boolean);
+
   const allowedOrigins = [
-    process.env.CLIENT_URL,       // Production Vercel URL
+    ...clientUrls,
     "http://localhost:5173",
     "http://127.0.0.1:5173",
     "http://localhost:3000",
-  ].filter(Boolean) as string[];
+  ];
 
   // CORS must be registered before all routes
   app.use(
